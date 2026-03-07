@@ -1,0 +1,29 @@
+Tasks: 
+1. Write RQ: Do startups in the sustainability sector use the same communication style as established companies?
+2. Identify appropriate and viable data (API?)
+Startup Sample:
+https://www.depoly.co/ 
+https://www.bloombiorenewables.com/
+https://www.divea.ch/
+https://www.cellx.ch/
+https://composite-recycling.ch/
+https://grensolgroup.com/
+https://www.tethys-robotics.ch/de-ch
+https://oxyle.com/
+https://www.comppair.ch/
+https://wattanywhere.com/
+https://seprify.com/
+https://www.exnaton.ai/?r=0
+https://enerdrape.com/en/
+https://viboo.io/
+https://perovskia.solar/
+Incumbent Sample:
+https://www.alpiq.com/de/
+https://www.novartis.com/ch-de/
+https://www.axpo.com/group/de.html
+https://www.holcim.ch/de
+https://www.nestle.com/
+3. Identify key variables of interest
+4. Test first prototype code (one test calls, one scraped page...)
+5. Git commit 2/3 times and git push (at the end)
+  + Create new GitHub issue with TODO list
