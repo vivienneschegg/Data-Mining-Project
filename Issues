@@ -24,6 +24,9 @@ https://www.axpo.com/group/de.html
 https://www.holcim.ch/de
 https://www.nestle.com/
 3. Identify key variables of interest
+- Define the website to look at
+- Define key words for sustainability
+- How else should I test the communication?
 4. Test first prototype code (one test calls, one scraped page...)
 5. Git commit 2/3 times and git push (at the end)
   + Create new GitHub issue with TODO list
