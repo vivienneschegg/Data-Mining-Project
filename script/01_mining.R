@@ -57,3 +57,4 @@ library(tidyverse)
 write_csv(firms2_data, "firms_data_starting.csv")
 
 
+

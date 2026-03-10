@@ -75,32 +75,31 @@ wordcloud(words = startup_words$word, freq = startup_words$n, max.words=50, colo
 incumbent_words <- tidy_corpus %>% filter(group == "Incumbent") %>% count(word)
 wordcloud(words = incumbent_words$word, freq = incumbent_words$n, max.words=50, colors=brewer.pal(8, "Blues"), main="Incumbents: Institutional Façade")
 
-#   Visualisation 5: Network Analysis
-install.packages("ggraph")
-install.packages("igraph")
-install.packages("tidygraph")
-library(ggraph)
-library(igraph)
-library(widyr)
+#   Visualisation 5: Network Analysis --> tried this plot, but max overlap
+library(dplyr)
 library(tidygraph)
+library(ggraph)
+library(widyr)
 
-word_cors <- tidy_corpus %>%
-  group_by(word) %>%
-  filter(n() >= 10) %>% # Only common words to avoid noise
-  pairwise_cor(word, name, sort = TRUE) # Correlation based on appearing in the same company profiles
+top_connections <- word_cors %>%
+  slice_max(correlation, n = 30) 
 
-threshold <- 0.35
-word_network <- word_cors %>%
-  filter(correlation > threshold) %>%
+word_network <- top_connections %>%
   as_tbl_graph(directed = FALSE)
 
-plot4 <- ggraph(word_network, layout = "fr") + # Fruchterman-Reingold layout for organic clusters
-  geom_edge_link(aes(edge_alpha = correlation, edge_width = correlation), edge_colour = "grey70") +
-  geom_node_point(color = "#2c3e50", size = 3) +
-  geom_node_text(aes(label = name), repel = TRUE, size = 4, fontface = "bold") +
-  theme_graph() +
-  labs(title = "Figure 5: The Isomorphic Word Network",
-       subtitle = "Connections represent words frequently appearing together across Swiss companies",
-       caption = paste("Correlation threshold >", threshold))
+plot4 <- ggraph(word_network, layout = "fr") + 
+  geom_edge_link(aes(edge_alpha = correlation), edge_colour = "grey70", show.legend = FALSE) +
+  geom_node_point(color = "#2c3e50", size = 4) +
+  # We force R to show labels even if they overlap slightly, and use a smaller font
+  geom_node_text(aes(label = name), 
+                 repel = TRUE, 
+                 size = 3.5, 
+                 family = "sans", 
+                 fontface = "bold",
+                 max.overlaps = 50) + # This line fixes your specific error!
+  theme_graph(base_family = "sans") + 
+  labs(title = "Figure 5: The Isomorphic Core",
+       subtitle = "Top 30 strongest linguistic correlations in the organizational field",
+       caption = "Linguistic 'Bridges' between Swiss Startups and Incumbents")
 
 print(plot4)
