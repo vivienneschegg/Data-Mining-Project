@@ -29,3 +29,16 @@ isomorphism_analysis <- tidy_corpus %>%
 
 # Print results
 print(isomorphism_analysis)
+
+# Compute Similarity between each Startup and the average "Incumbent Profile"
+final_similarity <- tidy_corpus %>%
+  count(name, word) %>%
+  pairwise_similarity(name, word, n) %>%
+  filter(item1 %in% research_data$name[research_data$type == "Startup"],
+         item2 %in% research_data$name[research_data$type == "Incumbent"]) %>%
+  group_by(item1) %>%
+  summarise(mean_isomorphism_index = mean(similarity)) %>%
+  arrange(desc(mean_isomorphism_index))
+
+print("Isomorphism Ranking (Higher = more similar to Green Giants):")
+print(final_similarity)

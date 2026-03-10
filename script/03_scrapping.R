@@ -4,6 +4,7 @@ library(dplyr)
 library(tidytext)
 install.packages("stopwords")
 library(stopwords)
+library(jsonlite)
 
 # 1. Filter the Incumbent Firms
 incumbent_analysis <- firms_data3_final %>%
@@ -56,6 +57,14 @@ startup_keywords <- startup_analysis %>%
          nchar(word) > 3,
          !grepl("[0-9]", word)) %>%
   count(word, sort = TRUE)
+
+#Creating the whole data list
+full_research_data <- bind_rows(
+  startup_analysis %>% mutate(group = "Startup"),
+  incumbent_analysis %>% mutate(group = "Incumbent")
+)
+
+write_json(full_research_data, "full_research_data.json", pretty = TRUE)
 
 #Compare the lists
 
