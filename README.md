@@ -1,59 +1,20 @@
-# Data-Mining-Project
-Project for Data Mining Seminar
-Data Mining Project Template
-This repository contains the code for a small data mining project developed as part of the course:
+Author: Vivienne Schegg
+Course: Data Mining in Social Sciences using R (Spring 2026)
+University: University of Lucerne
 
-Data Access and Data Mining for Social Sciences
+#Project Goal
+The goal of this project is to analysze whether Swiss green-tech startups adopt the institutionalized language of established corporations to gain legitimacy. This project should test if the liablitiy of newness forces swiss diruptors to adopt the corporate vocabulary of incumbents to gain legitimacy among local investors and regulators.
 
-University of Lucerne
+#The project should demonstrate
+- Automated data collection: Creating a custom crawler to identify and scrape the corporate pages which are relevant for sustainability values of the company.
+- Data Mining: TF-IDF analysis and Cosine Similarity measures
+- Reproducibility: Creating a structured R pipeline from raw URL discovery to final visualisation
 
-Student Name
-Course: Data Mining for the Social Sciences using R Term: Spring 2026
+#Data Source
+- Startup Sample (n = 15): Top-tier Swiss cleantech and sustainability firms selected from the "TOP 100 Swiss Startup" list
+- Incumbent Sample (n = 5): Leading Swiss-listed corporations (SMI/SPI) with mature ESG profiles
+- 
+#Example
 
-Project Goal
-The goal of this project is to collect and analyze data from an online source (API or web scraping) in order to answer a research question relevant to political or social science.
+#Project Description
 
-The project should demonstrate:
-
-Identification of a suitable data source
-Automated data collection (API or scraping)
-Data cleaning and preparation
-Reproducible analysis
-Research Question
-(Replace with your own question)
-
-Example:
-
-How frequently do political speeches contain populist rhetoric?
-Data Source
-Describe the data source here.
-
-Example:
-
-API: https://example-api.com
-Documentation: https://example-api.com/docs
-Access method: HTTP GET requests
-Repository Structure
-/code scripts used to collect/process data /data output datasets (not tracked/pushed by git) README.md project description
-
-Reproducibility
-To reproduce this project:
-
-Clone the repository
-Install required R packages
-Run the scripts in the code/ folder
-All data should be generated automatically by the scripts.
-
-Good Practices
-Please follow these guidelines:
-
-Do not upload raw datasets to GitHub.
-Store API keys outside the repository (e.g., environment variables).
-Write scripts that run from start to finish.
-Commit your work frequently.
-Use clear commit messages.
-Example commit messages: added API request cleaned dataset structure added visualization fixed JSON parsing
-
-Notes
-Large datasets should not be pushed to GitHub.
-If necessary, provide instructions for downloading the data instead.
