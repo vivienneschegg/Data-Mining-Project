@@ -75,31 +75,3 @@ wordcloud(words = startup_words$word, freq = startup_words$n, max.words=50, colo
 incumbent_words <- tidy_corpus %>% filter(group == "Incumbent") %>% count(word)
 wordcloud(words = incumbent_words$word, freq = incumbent_words$n, max.words=50, colors=brewer.pal(8, "Blues"), main="Incumbents: Institutional Façade")
 
-#   Visualisation 5: Network Analysis --> tried this plot, but max overlap
-library(dplyr)
-library(tidygraph)
-library(ggraph)
-library(widyr)
-
-top_connections <- word_cors %>%
-  slice_max(correlation, n = 30) 
-
-word_network <- top_connections %>%
-  as_tbl_graph(directed = FALSE)
-
-plot4 <- ggraph(word_network, layout = "fr") + 
-  geom_edge_link(aes(edge_alpha = correlation), edge_colour = "grey70", show.legend = FALSE) +
-  geom_node_point(color = "#2c3e50", size = 4) +
-  # We force R to show labels even if they overlap slightly, and use a smaller font
-  geom_node_text(aes(label = name), 
-                 repel = TRUE, 
-                 size = 3.5, 
-                 family = "sans", 
-                 fontface = "bold",
-                 max.overlaps = 50) + # This line fixes your specific error!
-  theme_graph(base_family = "sans") + 
-  labs(title = "Figure 5: The Isomorphic Core",
-       subtitle = "Top 30 strongest linguistic correlations in the organizational field",
-       caption = "Linguistic 'Bridges' between Swiss Startups and Incumbents")
-
-print(plot4)
