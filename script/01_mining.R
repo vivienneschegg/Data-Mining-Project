@@ -1,4 +1,4 @@
-#Creating a Dataframe for my firms
+#Creating a Dataframe for my firms (first idea )
 
 firms_data <- data.frame(
   name = c("DePoly", "Bloom Biorenewables", "Divea", "CellX", "Composite Recycling", 
@@ -30,7 +30,7 @@ firms_data <- data.frame(
 
 head(firms_data)
 
-#Data.frame without the subpages
+#Data.frame without the subpages (implementing the critics)
 firms2_data <- data.frame(
   name = c("DePoly", "Bloom Biorenewables", "Divea", "CellX", "Composite Recycling", 
            "Grensol", "Tethys Robotics", "Oxyle", "CompPair", "WattAnyWhere", 
