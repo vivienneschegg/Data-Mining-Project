@@ -8,28 +8,193 @@ format:
     toc: true
     number-sections: true
     colorlinks: true
+    geometry: margin=1in
+    documentclass: report
 ---
+\newpage
 
 # Introduction
+The swiss sustainability sector is currently characterized by a distinct organizational tension. One one side, established "incumbents" (like Nestlé or Roche) face increasing pressure from regulators and the public to demonstrate environmental stewardship. On the other side, a wave of "Green-Tech" startups are entering the market, aiming to disupt traditional industries with technical  innovations.
+
+This project investigates the linguistic relationship between these two groups. Using neo-institutional theory as a guiding framework in the backround, this project tests if startups maintain a distinct technical focus or if they succumb to the liability of newness by adopting the institutionalized vocabulary of incumbents to gain legitimacy. Therefore this report should create an end-to-end data mining pipeline used to quantify this phenomenon.
+
+# Project Goals and Research Question
+The primary research question is: **To what extent do Swiss sustainability startup adopt the institutionalized corporate vocabulary of incumbents versus maintaining a distinct technical focus?**
+
+The project aims to demonstrate:
+
+1. **Automated Data Collection**: Transitioning from static lists to dynamic web content via a custom-made crawler. For this the main-url and the classification in incumbent or startup is needed.
+
+2. **Quantitatice Text Mining**: Utilizing TF-IDF and Cosine Similarity to measure organizational distance.
+
+3. **Reproducibility**: Ensuring the entire pipeline, from raw URL discovery to final visualization is, is transparent and executable.
 
 # Data Access Pipeline
 
-- **Sampling:** 
-- **The Crawler:** 
-- **The Scraper:** 
+The technical core of this project consists of a six-stage R pipeline, designed to transform raw web domains into a structured, theory-coded corpus. Each script fulfills a specific role in ensuring data integrity and reproducibility.
 
-# Data Mining Methodology
+## Sampling and Initialization (Script 01)
+The first step involved the definition of a purposive sample to address the research question. Twenty organizations were selected to represent the Swiss sustainability field:
 
-- **TF-IDF:**
-- **Cosine Similarity:** 
-- **Dictionary Construction:** 
-# Empirical Results & Visualization
+* **Startup Sample (n=15):** Firms were extracted from the "TOP 100 Swiss Startup" list, focusing specifically on the Cleantech and Sustainability sectors (e.g., DePoly, CompPair, Tethys Robotics).
 
-- **Figure 1 (Decoupling):**
-- **Figure 2 (Isomorphism Index):** 
-- **TF-IDF Analysis:** 
+* **Incumbent Sample (n=5):** Leading Swiss-listed corporations (SMI/SPI) with mature ESG profiles were chosen as benchmarks (e.g., Nestlé, Novartis, Alpiq).
+
+The script generates the `firms_data_starting.csv` file, which serves as the technical anchor for the subsequent automation stages.
+
+## The Automated Crawler (Script 02)
+A major methodological hurdle in organizational research is "Selection Bias." To avoid manually choosing "representative" pages, I developed an automated crawler:
+
+* **Keyword Matching:** The script parses the HTML structure of the homepages and identifies subpages containing keywords such as `about`, `mission`, `sustainability`, `nachhaltigkeit`, and `impact`.
+
+* **Domain Validation:** To prevent the crawler from following external links (e.g., social media), a validation logic ensures that only internal URLs are added to the scraping queue. This ensures the integrity of the organizational dataset.
+
+## Web Scraping and NLP (Script 03)
+The extraction phase utilizes the `httr` and `rvest` packages to secure content from the identified subpages:
+
+* **Request Simulation:** Since many corporate servers block automated requests, custom User-Agent strings were implemented to mimic human browser behavior.
+
+* **Data Tidying:** To minimize "HTML noise" (menus, footers), the scraper targets specific tags such as `<p>`, `<h1>`, `<h2>`, and `<h3>`.
+
+* **Bilingual Processing:** Given the multilingual nature of the Swiss market, a combined stopword filter (German and English) was applied to the tokenized corpus, focusing the analysis on semantically meaningful terms.
+
+## Baseline Mining and TF-IDF (Script 04)
+Following the cleaning process, the statistical structure of the text was analyzed using TF-IDF:
+
+* **Uniqueness Weighting:** Unlike simple frequency counts, TF-IDF weights terms higher if they are characteristic of one group (e.g., Startups) while being rare in the other (Incumbents).
+
+* **Isomorphism Index:** Based on these weights, I calculated the Cosine Similarity. This mathematical value (ranging from 0 to 1) measures the linguistic distance between startups and the aggregate incumbent profile, allowing for a ranking of the most "isomorphic" firms.
+
+## Theory-Driven Dictionary Analysis (Script 05)
+To bridge the gap to the sociological theory of Strategic Decoupling, a theoretical dictionary was constructed:
+
+* **Institutional Façade:** This category includes abstract, value-based terms (e.g., *stewardship, vision, responsibility*) that primarily serve symbolic legitimation.
+
+* **Technical Substance:** This category focuses on operational and solution-oriented terms (e.g., *engineering, CO2, circular, recycling*).
+By matching the corpus against this dictionary, the proportion of "Façade" vs. "Substance" was quantified for each organizational group.
+
+## Data Visualization and Communication (Script 06)
+The final script handles the visual communication of the results:
+
+* **Gap Analysis:** Using `ggplot2`, bar charts were created to illustrate the significant difference in language use (64.8% Façade for Incumbents vs. 74.8% Substance for Startups).
+
+* **Isomorphism Gradient:** A visualization of the Cosine Similarity shows that mimicry is not a binary state but a gradient, where firms like *CompPair* have already significantly aligned with corporate standards.
+
+* **Word Clouds:** To provide an intuitive grasp of the "two worlds," word clouds were generated, highlighting the contrast between the technical focus of startups and the visionary framing of incumbents.
+
+# Methodology
+
+## TF-IDF Analysis
+Instead of simple word counts, I utilized TF-IDF. This allowed me to identify words that are truly characteristic of a group. For example, while "sustainability" appears in both groups, TF-IDF highlights that "robotics" is unique to startups, whereas "reimagine" is unique to incumbents.
+
+## The Isomorphism Index (Cosine Similarity)
+To measure the "linguistic distance," I transformed the text into a vector space model. By calculating the Cosine Similarity between each startup and the aggregate incumbent profile, I created a mathematical "Isomorphism Index." A score of 0 indicates complete linguistic divergence, while 1 indicates identical communicative patterns.
+
+## Dictionary-Based Classification
+By constructing a theoretical dictionary one can categorize terms into two constructs:
+
+1.  **Institutional Façade:** Abstract, value-based language (e.g., mission, responsibility, global society).
+
+2.  **Technical Substance:** Operational, action-oriented language (e.g., CO2, recycling, engineering).
+
+# Empirical Results
+
+## Strategic Decoupling (Plot 1)
+The analysis reveals a significant "Strategic Decoupling" gap. 
+
+- **Incumbents** dedicate 64.8% of their vocabulary to "Institutional Façade." This suggests that for large corporations, sustainability is primarily a tool for social legitimacy.
+
+- **Startups** dedicate 74.8% of their vocabulary to "Technical Substance." Their legitimacy is functional; they define themselves through their technical capabilities rather than their visionary framing.
+
+```{r}
+#| label: fig-strategic-gap
+#| fig-cap: "Strategic Decoupling vs. Technical Substance: Comparing the linguistic focus of Incumbents vs. Startups."
+#| echo: false
+#| out-width: "85%"
+knitr::include_graphics("C:/Users/vivie/OneDrive - Universität Luzern/Dokumente/R-Scripte/Data Mining in Social Science FS26/Data-Mining-Project/Visualisations/Plot 1.png")
+```
+
+## The Gradient of Mimetic Isomorphism
+
+While the aggregate comparison shows a clear divide, the degree of corporate mimicry varies significantly among individual startups. By calculating the Cosine Similarity between each startup's vocabulary and the average incumbent profile, I constructed the Mimetic Isomorphism Index. This measure quantifies how much a startup has "translated" its technical identity into the institutional language of the corporate field.
+
+```{r}
+#| label: fig-isomorphism-index
+#| fig-cap: "Mimetic Isomorphism Index: Ranking Swiss startups by their linguistic convergence to the aggregate incumbent profile."
+#| echo: false
+#| out-width: "85%"
+
+knitr::include_graphics("C:/Users/vivie/OneDrive - Universität Luzern/Dokumente/R-Scripte/Data Mining in Social Science FS26/Data-Mining-Project/Visualisations/Plot 2.png")
+```
+
+## Use of Institutional Keywords
+
+To understand which specific terms drive the "Institutional Façade" found in incumbents, I analyzed the frequency of top-tier institutional keywords across both groups. This visualization reveals the specific "vocabulary of legitimacy" that defines the Swiss sustainability sector.
+
+```{r}
+#| label: fig-institutional-keywords
+#| fig-cap: "Frequency of 'Façade' terms: Comparison of institutional keyword usage between Incumbents and Startups."
+#| echo: false
+#| out-width: "85%"
+
+knitr::include_graphics("C:/Users/vivie/OneDrive - Universität Luzern/Dokumente/R-Scripte/Data Mining in Social Science FS26/Data-Mining-Project/Visualisations/Plot 3.png")
+```
+
+# Reproducibility
+
+The project follows a strict reproducible workflow:
+
+- **Modular Code:** Scripts are numbered sequentially.
+
+- **Relative Paths:** No absolute file paths are used, allowing the repository to be run on any system.
+
+- **Data Persistence:** The cleaned dataset is exported as `full_research_data.json`, allowing for analysis even if corporate websites change their structure.
+
+- To use this again one just need to create a csv-file with a list of the firm which want to be studied
 
 # Discussion and Limitations
 
+The empirical findings of this project provide a compelling quantitative look at the Swiss sustainability sector. However, the development of the data mining pipeline revealed several technical and methodological challenges that merit a detailed discussion.
+
+## Technical Challenges in Automated Collection
+
+A significant hurdle was the development of the custom crawler (Script 02). In initial versions, the crawler was prone to "domain-leaking," where it would follow links to external social media platforms like LinkedIn or Instagram. These platforms often contain vast amounts of non-relevant text or are protected by login-walls, which caused the scraper to fail or produce "noisy" data. 
+
+To resolve this, I implemented a strict domain-validation logic:
+```{r}
+#| eval: false
+#| echo: true
+if (!is.na(domain_name) && grepl(domain_name, abs_url)) {
+    final_urls <- c(final_urls, abs_url)
+}
+```
+
+While this successfully ensured that only internal organizational content was collected, it remains a limitation: valuable sustainability information hosted on external platforms (like PDF impact reports or LinkedIn-hosted manifestos) was excluded to maintain the integrity of the automated pipeline.
+
+## Methodological Shift
+Initially, the project aimed to compare the entire vocabulary of both groups. However, the raw comparison proved less insightful than expected, as the high frequency of functional, non-thematic words (e.g., "contact," "services") overshadowed the sustainability-specific signals.
+
+To address this, I shifted to a theory-driven dictionary approach. By using pre-defined keywords, I ensured that the comparison focused strictly on themes relevant to sustainability. While this increased the precision of the "Isomorphism Index," it introduced a degree of researcher bias. In future iterations, a Large Language Model (LLM) could be used to classify relevant subpages and themes dynamically, reducing the reliance on static keyword lists and potentially identifying more nuanced "Façade" strategies.
+
+## Sampling and Field Representation
+
+The Swiss market presents a unique challenge for organizational studies due to its size. Finding perfect "one-to-one" matches between incumbents and startups was difficult. For instance, while the SMI/SPI-listed corporations represent the peak of the Swiss economy, they operate in diverse sectors (Pharma, Food) that might not perfectly mirror the specialized niches of the startups (e.g., high-tech material science).
+
+Furthermore, a notable bias exists due to the academic nature of the Swiss startup scene. Many of the firms in the sample are spin-offs from institutions like ETH Zurich or EPFL. This creates a "Scientific Isomorphism," where startups share a similar technical language because they originate from the same professional networks. This likely explains why the "Technical Substance" category remained so high (74.8%) across the startup sample.
+
+Finally, with $n=20$, the sample size is sufficient for a purposive exploratory study but too small for broad generalization across the entire Swiss economy. The results serve as a proof-of-concept, demonstrating that data mining can move beyond qualitative case studies to provide a reproducible, quantitative measure of how organizations strategically navigate the tension between technical authenticity and institutional legitimacy.
 
 # LLM Disclosure Note
+
+In accordance with the guidelines of the University of Lucerne, I disclose the use of **Gemini 3 Flash (Google)** as an AI assistant during the development of this project. The collaboration involved several key areas:
+
+* **Code Generation and Logic:** The assistant helped develop the core logic for the automated crawler (Script 02), specifically the domain-validation routines and the keyword-matching algorithms used to identify relevant subpages.
+
+* **Technical Explanation and Documentation:** I utilized the LLM to explain complex R functions and libraries (e.g., `rvest` nodes, `tidytext` tokenization, and `cosine similarity` matrices), which helped in documenting the technical workflow of each script.
+
+* **Debugging:** The assistant was used as a primary tool for troubleshooting R errors, specifically regarding list-nesting in the scraping process and path-handling issues during the Quarto rendering.
+
+* **Translation and Linguistic Refinement:** Since the primary research and data were collected in a Swiss context (German/English), Gemini was used to translate my conceptual drafts from German to academic English and to refine the linguistic flow of the final report.
+
+**Verification and Responsibility:**
+All code generated or suggested by the LLM was manually reviewed, tested, and executed in RStudio. All sociological interpretations of the data mining results were cross-referenced with course materials and relevant literature on Neo-Institutionalism. The final analytical conclusions remain the sole responsibility of the author.
