@@ -22,17 +22,22 @@ The goal of this project is to analysze whether Swiss green-tech startups adopt 
 01_miming: Data Initialization
 - Defining the sampling frame
 - Generates firms_data_startung.csv with base URLs
+
 02_searchingsubpages: Automated Crawler
 - Crawler uses keyword matching (e.g., about us, sustainability) to automatically discover relevant subpages for scraping
 - Ensures reproducability by automating the discovery of content rather than manual link collection
+
 03_scrapping: Text Extraction
   - Scrapes the identified subpages using httr and rvest
   - Cleans test and saves unified dataset to full_research_data.json
+    
 04_tf_idf_analysis: Baseline Mining
 - Calculates TF-IDF scores to find group-specific keywords
 - Uses Cosine Similarity to create mathematical "isomorphism index"
+  
 05_analysiswithkeywords: Theory-Driven
-- Categorizes corpus into to theoretical constructs: institutional facade (symbolic, value-based language) and technical substance (operational, action-oriented language)
+  - Categorizes corpus into to theoretical constructs: institutional facade (symbolic, value-based language) and technical substance (operational, action-oriented language)
+
 06_visualisations: Data communication
 - Generating final figures for interpretation
 
