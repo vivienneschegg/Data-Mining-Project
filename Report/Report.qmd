@@ -1,0 +1,35 @@
+---
+title: "To what extent do swiss sustainability startups adopt the institutionalized corporate vocabulary of incumbents versus maintaning a distinct technical focus?"
+subtitle: "Data Mining Project - University of Lucerne"
+author: "Vivienne Schegg"
+date: "2026-03-27"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+---
+
+# Introduction
+
+# Data Access Pipeline
+
+- **Sampling:** 
+- **The Crawler:** 
+- **The Scraper:** 
+
+# Data Mining Methodology
+
+- **TF-IDF:**
+- **Cosine Similarity:** 
+- **Dictionary Construction:** 
+# Empirical Results & Visualization
+
+- **Figure 1 (Decoupling):**
+- **Figure 2 (Isomorphism Index):** 
+- **TF-IDF Analysis:** 
+
+# Discussion and Limitations
+
+
+# LLM Disclosure Note
