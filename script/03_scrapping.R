@@ -13,7 +13,6 @@ incumbent_analysis <- firms_data3_final %>%
 # 2. Scrapping with httr
 get_site_text_httr <- function(url) {
   tryCatch({
-    # Anfrage mit User-Agent (simuliert einen Browser)
     res <- GET(url, user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWeb64"))
     
     if (status_code(res) == 200) {
@@ -42,7 +41,7 @@ incumbent_keywords <- incumbent_analysis %>%
 # Top 20 in incumbent firms
 print(head(incumbent_keywords, 20))
 
-#The same for Startups+
+#The same for Startups
 startup_analysis <- firms_data3_final %>%
   filter(type == "Startup")
 

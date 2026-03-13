@@ -2,8 +2,9 @@ library(rvest)
 library(xml2)
 library(tidyr)
 library(dplyr)
+library(httr)
 
-# 1. Load CSV directly into 'firms_data3'
+# 1. Load CSV directly into 'firms_data3' to make the script reproducible
 firms_data3 <- read.csv("firms_data_starting.csv", stringsAsFactors = FALSE)
 
 # 2. Define the search function
@@ -28,7 +29,7 @@ find_company_subpages <- function(main_url) {
     final_urls <- c()
     for (l in relevant$url) {
       abs_url <- url_absolute(l, main_url)
-      # Check if it's the same domain to avoid LinkedIn etc.
+      # Check if it's the same domain to avoid LinkedIn etc.(happend in previous versions)
       if (!is.na(domain_name) && grepl(domain_name, abs_url)) {
         final_urls <- c(final_urls, abs_url)
       }
@@ -41,21 +42,18 @@ find_company_subpages <- function(main_url) {
 firms_subpages <- list()
 
 for (i in 1:nrow(firms_data3)) {
-  # Fetch links using the URL column from firms_data3
   firms_subpages[[firms_data3$name[i]]] <- find_company_subpages(firms_data3$url[i])
 }
 
-# 4. Update 'firms_data3' with the found subpages
-# We transform the list of found links into a new table
+# 4. Update 'firms_data3' with the found sub pages
 firms_data3_final <- data.frame(
   name = names(firms_subpages),
   subpage_url = I(firms_subpages)
 ) %>% 
   unnest(subpage_url) %>%
   filter(!is.na(subpage_url)) %>%
-  # Join with the original data to keep the 'type' column
   left_join(firms_data3 %>% select(name, type), by = "name")
 
-# View your result
+# View results
 print("New table created: firms_data3_final")
 head(firms_data3_final)
