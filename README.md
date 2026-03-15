@@ -1,59 +1,51 @@
-# Data-Mining-Project
-Project for Data Mining Seminar
-Data Mining Project Template
-This repository contains the code for a small data mining project developed as part of the course:
+Author: Vivienne Schegg
+Course: Data Mining in Social Sciences using R (Spring 2026)
+University: University of Lucerne
 
-Data Access and Data Mining for Social Sciences
+# Research Question: To what extent do swiss sustainability startups adopt the institutionalized corporate vocabulary of incumbents versus maintaning a distinct technical focus?
 
-University of Lucerne
+# Project Goal
+The goal of this project is to analysze whether Swiss green-tech startups adopt the institutionalized language of established corporations to gain legitimacy. This project should test if the liablitiy of newness forces swiss diruptors to adopt the corporate vocabulary of incumbents to gain legitimacy among local investors and regulators.
 
-Student Name
-Course: Data Mining for the Social Sciences using R Term: Spring 2026
 
-Project Goal
-The goal of this project is to collect and analyze data from an online source (API or web scraping) in order to answer a research question relevant to political or social science.
+# The project should demonstrate
+- Automated data collection: Creating a custom crawler to identify and scrape the corporate pages which are relevant for sustainability values of the company.
+- Data Mining: TF-IDF analysis and Cosine Similarity measures
+- Reproducibility: Creating a structured R pipeline from raw URL discovery to final visualisation
 
-The project should demonstrate:
+# Data Source
+- Startup Sample (n = 15): Top-tier Swiss cleantech and sustainability firms selected from the "TOP 100 Swiss Startup" list
+- Incumbent Sample (n = 5): Leading Swiss-listed corporations (SMI/SPI) with mature ESG profiles
 
-Identification of a suitable data source
-Automated data collection (API or scraping)
-Data cleaning and preparation
-Reproducible analysis
-Research Question
-(Replace with your own question)
+# Methodology and Repository Structure
 
-Example:
+01_miming: Data Initialization
+- Defining the sampling frame
+- Generates firms_data_startung.csv with base URLs
 
-How frequently do political speeches contain populist rhetoric?
-Data Source
-Describe the data source here.
+02_searchingsubpages: Automated Crawler
+- Crawler uses keyword matching (e.g., about us, sustainability) to automatically discover relevant subpages for scraping
+- Ensures reproducability by automating the discovery of content rather than manual link collection
 
-Example:
+03_scrapping: Text Extraction
+  - Scrapes the identified subpages using httr and rvest
+  - Cleans test and saves unified dataset to full_research_data.json
+    
+04_tf_idf_analysis: Baseline Mining
+- Calculates TF-IDF scores to find group-specific keywords
+- Uses Cosine Similarity to create mathematical "isomorphism index"
+  
+05_analysiswithkeywords: Theory-Driven
+  - Categorizes corpus into to theoretical constructs: institutional facade (symbolic, value-based language) and technical substance (operational, action-oriented language)
 
-API: https://example-api.com
-Documentation: https://example-api.com/docs
-Access method: HTTP GET requests
-Repository Structure
-/code scripts used to collect/process data /data output datasets (not tracked/pushed by git) README.md project description
+06_visualisations: Data communication
+- Generating final figures for interpretation
 
-Reproducibility
-To reproduce this project:
+# Key Findings
+- Analysis shows that incumbents rely more heavily on facade terminology (symbolic legitimacy) while startups emphasizes substance (technical legitimacy). In incumbents nearly 2/3 of the sustainability communication is in the facade category. Where as in Startup 3/4 of the vocabulary is in the technical part. Their legitimacy needs to be functional, they are relevant because of there doing and not of the symbolic/meaning.
+- With the final_similarity-ouput we can rank the startups according to their gradient of communicational isomorphism. The absolut cosine-similarity-values are in a rather low range. But in relative comparison a big differences can be found between the startups. Isomorphism isn't a binary state in the sustainability sector but a gradient.
+- The TF-IDF-Analysis shows clearly two worlds. In startups the top-words are composite, robotics, cellulose and underwater, which describes physical processes. In incumbents words like reimagine, lives and social are often found. The organisations focus more on their impact on society and their visionary goals.
 
-Clone the repository
-Install required R packages
-Run the scripts in the code/ folder
-All data should be generated automatically by the scripts.
 
-Good Practices
-Please follow these guidelines:
-
-Do not upload raw datasets to GitHub.
-Store API keys outside the repository (e.g., environment variables).
-Write scripts that run from start to finish.
-Commit your work frequently.
-Use clear commit messages.
-Example commit messages: added API request cleaned dataset structure added visualization fixed JSON parsing
-
-Notes
-Large datasets should not be pushed to GitHub.
-If necessary, provide instructions for downloading the data instead.
+# Reflection:
+While the sample size is small, this project serves as a purposive sample of the most influential actors in the swiss sustainability field. It should demostrates how data mining can be used to empirically test the "strategic decoupling" hypothesis moving beyond qualitative case studies to a quanitative, reproducible measure of organizational behavior. The analysis shows that in the sustainability sector is a clear duality. Incumbents tend to use social legitimacy where as startups use the technical substance for their main legitimacy. 
