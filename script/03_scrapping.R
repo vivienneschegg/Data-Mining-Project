@@ -1,3 +1,5 @@
+#Dieses File wir nicht verwendet für Seminarpaper
+
 library(httr)
 library(rvest)
 library(dplyr)

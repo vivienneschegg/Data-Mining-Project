@@ -1,75 +1,90 @@
+# ==============================================================================
+# PROJEKT: Masterseminararbeit - Institutioneller Isomorphismus
+# SKRIPT 04: TF-IDF & Kosinus-Ähnlichkeit (Isomorphie-Index)
+# ==============================================================================
+
 library(jsonlite)
 library(tidytext)
 library(dplyr)
 library(stopwords)
-install.packages("widyr")
 library(widyr)
 library(ggplot2)
 library(forcats)
-#Analysis with the keyword found in script 03
-research_data <- fromJSON(readLines("full_research_data.json", warn = FALSE))
+library(tidyr)
 
-# Clean the dataset
+# 1. Eingelesene JSON-Textdaten laden
+if (file.exists("full_research_data.json")) {
+  research_data <- fromJSON(readLines("full_research_data.json", warn = FALSE))
+} else {
+  stop("FEHLER: Die Datei 'full_research_data.json' wurde nicht gefunden! Bitte Skript 03 zuerst ausführen.")
+}
+
+# 2. Text-Korpus bereinigen und tokenisieren (Tidy-Format)
+# Korrektur: Wir nutzen 'type' anstelle von 'group', passend zu deiner CSV-Struktur.
 tidy_corpus <- research_data %>%
   unnest_tokens(word, content) %>%
+  # Bilingualer Stopwort-Filter (Deutsch & Englisch)
   filter(!word %in% stopwords("de"), 
          !word %in% stopwords("en"),
-         nchar(word) > 3,
-         !grepl("[0-9]", word))
+         # Entfernt funktionale Web-Standardwörter, die das Ergebnis verzerren
+         !word %in% c("cookie", "cookies", "privacy", "datenschutz", "impressum", "contact", "kontakt"),
+         nchar(word) > 3,           # Nur Wörter mit mehr als 3 Buchstaben
+         !grepl("[0-9]", word))     # Reine Zahlen entfernen
 
-# TS-IDF Analysis for both groups
+# 3. TF-IDF Analyse für beide Organisationsformen (Startups vs. Incumbents)
+# Berechnet, welche Wörter statistisch charakteristisch für eine Gruppe sind
 group_tf_idf <- tidy_corpus %>%
-  count(group, word, sort = TRUE) %>%
-  bind_tf_idf(word, group, n) %>%
+  count(type, word, sort = TRUE) %>%
+  bind_tf_idf(word, type, n) %>%
   arrange(desc(tf_idf))
 
-head(group_tf_idf %>% filter(group == "Startup"), 15)
-head(group_tf_idf %>% filter(group == "Incumbent"), 15)
+print("--- TOP 15 CHARAKTERISTISCHE WÖRTER FÜR STARTUPS (TF-IDF) ---")
+print(head(group_tf_idf %>% filter(type == "Startup"), 15))
 
-#Similarity
-similarity_matrix <- tidy_corpus %>%
+print("--- TOP 15 CHARAKTERISTISCHE WÖRTER FÜR ETABLIERTE UNTERNEHMEN (TF-IDF) ---")
+print(head(group_tf_idf %>% filter(type == "Incumbent"), 15))
+
+
+# 4. Mathematische Modellierung des Isomorphie-Index (Kosinus-Ähnlichkeit)
+# Ziel: Linguistische Distanz jedes einzelnen Startups zum aggregierten Incumbent-Profil messen
+
+# Schritt A: Erstellung des aggregierten "Benchmark-Profils" der etablierten Unternehmen
+incumbent_profile <- tidy_corpus %>%
+  filter(type == "Incumbent") %>%
+  count(word) %>%
+  mutate(name = "AGGREGATED_INCUMBENT") %>%
+  select(name, word, n)
+
+# Schritt B: Worthäufigkeiten für jedes einzelne Startup berechnen
+startup_counts <- tidy_corpus %>%
+  filter(type == "Startup") %>%
   count(name, word) %>%
-  pairwise_similarity(name, word, n) %>%
-  arrange(desc(similarity))
+  select(name, word, n)
 
-print(similarity_matrix)
+# Schritt C: Zusammenführung für die Vektorraum-Matrix
+matrix_data <- bind_rows(startup_counts, incumbent_profile)
 
-#Visualisation
-isomorphism_ranking <- similarity_matrix %>%
-  filter(item1 %in% research_data$name[research_data$group == "Startup"],
-         item2 %in% research_data$name[research_data$group == "Incumbent"]) %>%
-  group_by(item1) %>%
-  summarise(mean_similarity = mean(similarity)) %>%
-  arrange(desc(mean_similarity))
+# Schritt D: Berechnung der paarweisen Kosinus-Ähnlichkeit über die Wortvektoren
+full_similarity <- matrix_data %>%
+  pairwise_similarity(name, word, n)
 
-ggplot(isomorphism_ranking, aes(x = mean_similarity, y = fct_reorder(item1, mean_similarity))) +
-  geom_segment(aes(x = 0, xend = mean_similarity, yend = item1), color = "grey") +
-  geom_point(size = 4, color = "#27ae60") +
-  labs(
-    title = "Mimetic Isomorphism Index",
-    subtitle = "How similar is each Startup's language to the Incumbent 'Green Giants'?",
-    x = "Cosine Similarity Score",
-    y = "Startup Name"
-  ) +
-  theme_minimal()
+# Schritt E: Filterung auf die für deine Forschungsfrage relevante Relation
+# Wir wollen NUR die Ähnlichkeit JEDES Startups zum AGGREGATED_INCUMBENT isolieren
+isomorphism_index <- full_similarity %>%
+  filter(item2 == "AGGREGATED_INCUMBENT") %>%
+  select(startup = item1, cosine_similarity = similarity) %>%
+  arrange(desc(cosine_similarity))
 
-# Top 15 Words
-top_tfidf <- group_tf_idf %>%
-  group_by(group) %>%
-  slice_max(tf_idf, n = 15) %>%
-  ungroup()
+# Organisationstyp für das spätere Plotten wieder hinzufügen (Sicherheits-Check)
+isomorphism_index <- isomorphism_index %>%
+  left_join(distinct(research_data %>% select(name, type)), by = c("startup" = "name"))
 
-ggplot(top_tfidf, aes(x = tf_idf, y = fct_reorder(word, tf_idf), fill = group)) +
-  geom_col(show.legend = FALSE) +
-  facet_wrap(~group, scales = "free") +
-  scale_fill_manual(values = c("Startup" = "#27ae60", "Incumbent" = "#2c3e50")) +
-  theme_minimal() +
-  labs(
-    title = "Distinctive Terminology (TF-IDF)",
-    subtitle = "Characteristic keywords for each organizational group",
-    x = "Uniqueness Score (TF-IDF)",
-    y = NULL
-  )
+print("--- DER MIMETISCHE ISOMORPHIE-INDEX (RANKING DER STARTUPS) ---")
+print(isomorphism_index)
 
 
-#I won't use those visualisation, doesn't seem that interesting
+# 5. Datensätze für die nächsten Pipeline-Schritte sichern
+write_csv(group_tf_idf, "group_tf_idf_results.csv")
+write_csv(isomorphism_index, "isomorphism_index_results.csv")
+
+print("Analysedaten erfolgreich exportiert! Bereit für die Skripte 05 (Dictionary) und 06 (Plots).")
