@@ -1,6 +1,6 @@
 # ==============================================================================
 # PROJEKT: Masterseminararbeit - Institutioneller Isomorphismus
-# SKRIPT: Vollständige Erstellung der erweiterten Firmen-Dataframes
+# SKRIPT 01: Vollständige Erstellung der erweiterten Firmen-Dataframes
 # ==============================================================================
 
 library(tidyverse)
