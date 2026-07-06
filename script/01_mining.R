@@ -93,9 +93,14 @@ firms2_data <- data.frame(
     "https://oxyle.com/", "https://www.comppair.ch/", "https://www.wattanywhere.com/", 
     "https://seprify.com/", "https://www.exnaton.ai/", "https://enerdrape.com/", 
     "https://viboo.io/", "https://perovskia.solar/", 
-    "https://www.planted.com/", "https://www.corintis.com/", "https://www.voltiris.com/", "https://www.mobyfly.com/", "https://www.climeworks.com/", 
-    "https://www.verretex.com/", "https://www.neology.ch/", "https://www.hayatx.com/", "https://www.battrion.com/", "https://synhelion.com/", 
-    "https://clearspace.today/", "https://kyburz-switzerland.ch/", "https://wingtra.com/", "https://www.yali-bio.com/", "https://www.anybotics.com/",
+    "https://eatplanted.com/", 
+    "https://www.corintis.com/", "https://www.voltiris.com/", "https://www.mobyfly.com/", "https://www.climeworks.com/", 
+    "https://www.verretex.com/", "https://www.neology.ch/", "https://www.hayatx.com/", 
+    "https://www.battrion.com/", 
+    "https://synhelion.com/", 
+    "https://clearspace.today/", "https://kyburz-switzerland.ch/", "https://wingtra.com/", 
+    "https://www.yali-bio.com/", 
+    "https://www.anybotics.com/",
     # Incumbents - Nur Hauptdomains 
     "https://www.alpiq.com/", "https://www.novartis.com/", 
     "https://www.axpo.com/", "https://www.nestle.com/", "https://www.bkw.ch/", 
@@ -106,7 +111,7 @@ firms2_data <- data.frame(
   stringsAsFactors = FALSE
 )
 
-print("--- ZWEITER ANSATZ (NUR HAUPTDOMAINS) ---")
+print("--- KORRIGIERTER ANSATZ (NUR HAUPTDOMAINS, URLS VERIFIZIERT) ---")
 print(firms2_data)
 
 # Verteilung überprüfen zur Kontrolle
