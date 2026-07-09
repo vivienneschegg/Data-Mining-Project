@@ -10,6 +10,7 @@ library(tidytext)
 library(stopwords)
 library(jsonlite)
 
+
 # 1. Filter the Incumbent Firms
 incumbent_analysis <- firms_data3_final %>%
   filter(type == "Incumbent")
