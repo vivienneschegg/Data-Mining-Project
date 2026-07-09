@@ -1,6 +1,6 @@
 # ==============================================================================
 # PROJEKT: Masterseminararbeit - Institutioneller Isomorphismus
-# SKRIPT 06: Datenvisualisierung und wissenschaftliche Grafiken (Figure 1-7)
+# SKRIPT 06: Datenvisualisierung und wissenschaftliche Grafiken (Figure 1-8)
 # ==============================================================================
 
 library(dplyr)
@@ -30,9 +30,6 @@ if (file.exists("decoupling_aggregate_results.csv") &
   stop("FEHLER: Die Analysedaten aus Skript 04/05 wurden nicht gefunden! Bitte führe diese zuerst aus.")
 }
 
-# ==============================================================================
-# NACHHALTIGKEITS-WÖRTERBUCH & RE-IMPORT FÜR ROHDATEN-PLOTS
-# ==============================================================================
 if (!exists("tidy_corpus") | !exists("sustainability_dict")) {
   warning("Hinweis: 'tidy_corpus' oder 'sustainability_dict' nicht im Workspace gefunden. Plots basieren auf den geladenen CSVs.")
 }
@@ -69,19 +66,19 @@ ggsave("Visualisations/Figure_1_Strategic_Gap.png", plot = plot1, width = 8, hei
 
 
 # ==============================================================================
-# FIGURE 2: ISOMORPHISM GRADIENT (Das Ranking aller 30 Start-ups)
+# FIGURE 2: ISOMORPHISM GRADIENT (Das Ranking aller Start-ups)
+# ANGEGLICHEN: einheitliches Grün statt Farbverlauf, base_size 12 wie überall
 # ==============================================================================
-plot2 <- ggplot(iso_index_data, aes(x = reorder(startup, cosine_similarity), y = cosine_similarity, fill = cosine_similarity)) +
-  geom_col(width = 0.7) +
+plot2 <- ggplot(iso_index_data, aes(x = reorder(startup, cosine_similarity), y = cosine_similarity)) +
+  geom_col(width = 0.7, fill = "#27ae60") +
   coord_flip() +
-  scale_fill_gradient(low = "#a1d99b", high = "#00441b") +
   labs(
     title = "Figure 2: Mimetic Isomorphism Index",
     subtitle = "Linguistische Konvergenz der einzelnen Schweizer Start-ups zum kollektiven Corporate-Profil",
     y = "Isomorphie Score (Kosinus-Ähnlichkeit: 0 = Divergent, 1 = Identisch)", 
     x = "Nachhaltigkeits-Start-up"
   ) +
-  theme_minimal(base_size = 11) + 
+  theme_minimal(base_size = 12) + 
   theme(
     legend.position = "none",
     plot.title = element_text(face = "bold", size = 14),
@@ -177,8 +174,6 @@ ggsave("Visualisations/Figure_5_Decoupling_Micro_Scatter.png", plot = plot5, wid
 # ==============================================================================
 if (exists("group_tf_idf")) {
   
-  # KORREKTUR: Die Top 10 Begriffe explizit hier berechnen, 
-  # damit das Objekt 'top_tf_idf' garantiert existiert:
   top_tf_idf <- group_tf_idf %>%
     group_by(type) %>%
     slice_max(tf_idf, n = 10, with_ties = FALSE) %>%
@@ -213,37 +208,71 @@ if (exists("group_tf_idf")) {
 
 # ==============================================================================
 # FIGURE 7: BILINGUALE WORD CLOUDS (Der explorative Abschluss)
+# ANGEGLICHEN: Farbverläufe basieren jetzt auf #27ae60 (Start-ups) und
+# #2c3e50 (Incumbents) statt auf den RColorBrewer-Standardpaletten
 # ==============================================================================
 if (exists("tidy_corpus")) {
-  # Hochauflösenden PNG-Export für die Wordcloud starten
   png("Visualisations/Figure_7_Wordclouds.png", width = 2400, height = 1400, res = 300)
   
   par(mfrow=c(1,2), mar=c(1,1,3,1)) 
   set.seed(123)
   
-  # A. Wordcloud für Start-ups (Fokus auf Technik & Operationen)
+  # Farbverlauf basierend auf dem Start-up-Grün (hell -> #27ae60)
+  startup_colors <- colorRampPalette(c("#a8ddc0", "#27ae60"))(8)
+  
   startup_words <- tidy_corpus %>% filter(type == "Startup") %>% count(word)
   wordcloud(
     words = startup_words$word, 
     freq = startup_words$n, 
     max.words = 40, 
     scale = c(2.5, 0.4),
-    colors = brewer.pal(8, "Dark2")
+    colors = startup_colors
   )
   title("Startups: Technical Substance", col.main = "#27ae60", font.main = 2, cex.main = 1.1)
   
-  # B. Wordcloud für Incumbents (Fokus auf institutionalisierte Legitimität)
+  # Farbverlauf basierend auf dem Incumbent-Blaugrau (hell -> #2c3e50)
+  incumbent_colors <- colorRampPalette(c("#8395a7", "#2c3e50"))(8)
+  
   incumbent_words <- tidy_corpus %>% filter(type == "Incumbent") %>% count(word)
   wordcloud(
     words = incumbent_words$word, 
     freq = incumbent_words$n, 
     max.words = 40, 
     scale = c(2.5, 0.4),
-    colors = brewer.pal(8, "Blues")[5:8]
+    colors = incumbent_colors
   )
   title("Incumbents: Institutional Façade", col.main = "#2c3e50", font.main = 2, cex.main = 1.1)
   
-  dev.off() # Grafikgerät schließen und Datei schreiben
-  par(mfrow=c(1,1)) # R-Standardkonfiguration wiederherstellen
+  dev.off()
+  par(mfrow=c(1,1))
   print("Figure 7: Wordclouds erfolgreich unter 'Figure_7_Wordclouds.png' gespeichert.")
+}
+
+
+# ==============================================================================
+# FIGURE 8: BOXPLOT - Technische Substanz nach Organisationstyp (für H1/4.5)
+# ==============================================================================
+if (exists("firm_decoupling")) {
+  
+  plot8 <- ggplot(firm_decoupling, aes(x = type, y = technical_substance_share, fill = type)) +
+    geom_boxplot(width = 0.5, alpha = 0.8, outlier.shape = NA) +
+    geom_jitter(width = 0.1, size = 2, alpha = 0.6, color = "black") +
+    scale_fill_manual(values = c("Incumbent" = "#2c3e50", "Startup" = "#27ae60")) +
+    labs(
+      title = "Figure 8: Technische Substanz nach Organisationstyp",
+      subtitle = "Verteilung des Anteils technischer Substanzsprache (t-Test H1)",
+      x = "Organisationstyp",
+      y = "Anteil technischer Substanz (%)"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(
+      legend.position = "none",
+      plot.title = element_text(face = "bold", size = 14)
+    )
+  
+  print(plot8)
+  ggsave("Visualisations/Figure_8_Boxplot_Substance.png", plot = plot8, width = 7, height = 6, dpi = 300)
+  
+} else {
+  warning("Objekt 'firm_decoupling' wurde nicht im Workspace gefunden. Figure 8 konnte nicht erstellt werden.")
 }
