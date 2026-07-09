@@ -23,7 +23,7 @@ sustainability_dict <- data.frame(
     "society", "social", "stewardship", "governance", "esg", "sdg", "purpose", 
     "leadership", "integrity", "strive", "generations",
     "nachhaltigkeit", "verantwortung", "engagement", "werte", "zukunft",
-    "wirkung", "global", "auftrag", "vision", "transformation", "gesellschaft",
+    "wirkung", "auftrag", "gesellschaft",
     "sozial", "führung", "unternehmensführung", "wertegemeinschaft", "generationen",
     
     # --- TECHNISCHE SUBSTANZ (Operational, solution-oriented language) ---
@@ -31,14 +31,14 @@ sustainability_dict <- data.frame(
     "renewable", "energy", "efficiency", "circular", "material", "waste",
     "science", "innovation", "engineering", "robotics", "biological", "software",
     "hardware", "infrastructure", "production", "process", "biodegradable",
-    "recycling", "technologie", "lösung", "kohlenstoff", "emissionen",
+    "technologie", "lösung", "kohlenstoff", "emissionen",
     "erneuerbar", "energie", "effizienz", "zirkulär", "kreislaufwirtschaft",
-    "material", "abfall", "wissenschaft", "innovation", "ingenieurwesen", "robotik",
+    "abfall", "wissenschaft", "ingenieurwesen", "robotik",
     "biologisch", "produktion", "prozess", "verfahren", "umwelttechnik"
   ),
   category = c(
-    rep("Institutional_Façade", 22 + 16),
-    rep("Technical_Substance", 23 + 21)
+    rep("Institutional_Façade", 22 + 13),
+    rep("Technical_Substance", 23 + 18)
   ),
   stringsAsFactors = FALSE
 )
