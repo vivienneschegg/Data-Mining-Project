@@ -18,7 +18,7 @@ library(robotstxt)
 # ------------------------------------------------------------------------------
 # Ethik-Layer (robots.txt-Check + identifizierender User-Agent)
 # ------------------------------------------------------------------------------
-academic_user_agent <- "VivienneSchegg-MasterThesis-UniLuzern/1.0 (+mailto:DEINE-UNI-MAIL@stud.unilu.ch; wissenschaftliche Datenerhebung fuer Masterseminararbeit, Uni Luzern)"
+academic_user_agent <- "VivienneSchegg-MasterThesis-UniLuzern/1.0 (+mailto:vivienne.schegg@stud.unilu.ch; wissenschaftliche Datenerhebung fuer Masterseminararbeit, Uni Luzern)"
 
 is_scraping_allowed <- function(url) {
     tryCatch({

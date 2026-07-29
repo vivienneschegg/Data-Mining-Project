@@ -6,6 +6,8 @@
 # ==============================================================================
 
 library(dplyr)
+library(robotstxt)
+library(readr)
 
 # ------------------------------------------------------------------------------
 # 0. STUFE A: Wie viele der 30 Start-ups haben nach dem CRAWLER (Skript 02)
@@ -445,3 +447,67 @@ if (exists("firm_level_decoupling")) {
 } else {
   cat("STUFE D: 'firm_level_decoupling' nicht im Workspace - Skript 05 zuerst ausführen.\n")
 }
+
+# ==============================================================================
+# DIAGNOSESKRIPT: robots.txt-Check für alle Firmen-URLs
+# Prüft, welche Firmen-Hauptseiten laut robots.txt NICHT gecrawlt werden dürfen
+# ==============================================================================
+
+
+academic_user_agent <- "VivienneSchegg-MasterThesis-UniLuzern/1.0 (+mailto:vivienne.schegg@stud.unilu.ch; wissenschaftliche Datenerhebung fuer Masterseminararbeit, Uni Luzern)"
+
+# 1. Firmenliste laden
+if (file.exists("firms_data_starting.csv")) {
+  firms_data3 <- read.csv("firms_data_starting.csv", stringsAsFactors = FALSE)
+} else {
+  stop("FEHLER: 'firms_data_starting.csv' nicht gefunden. Bitte Skript 01 zuerst laufen lassen.")
+}
+
+# 2. Prüffunktion mit detailliertem Status (nicht nur TRUE/FALSE)
+check_robots <- function(url) {
+  result <- tryCatch({
+    allowed <- paths_allowed(url, user_agent = academic_user_agent)
+    if (isTRUE(allowed)) {
+      "erlaubt"
+    } else {
+      "NICHT erlaubt"
+    }
+  }, error = function(e) {
+    paste("Fehler bei Prüfung:", conditionMessage(e))
+  })
+  
+  Sys.sleep(0.3)  # Politeness-Pause auch beim reinen robots.txt-Abruf
+  return(result)
+}
+
+# 3. Für jede Firma prüfen
+print("Prüfe robots.txt für alle Firmen...")
+
+robots_check_results <- firms_data3 %>%
+  rowwise() %>%
+  mutate(robots_status = check_robots(url)) %>%
+  ungroup() %>%
+  select(name, type, url, robots_status)
+
+# 4. Übersicht ausgeben
+print("--- ERGEBNIS: robots.txt-Status pro Firma ---")
+print(robots_check_results)
+
+# 5. Nur die problematischen Fälle herausfiltern
+blocked_firms <- robots_check_results %>%
+  filter(robots_status != "erlaubt")
+
+cat("\n\n--- ZUSAMMENFASSUNG ---\n")
+cat("Firmen gesamt geprüft:", nrow(robots_check_results), "\n")
+cat("Davon NICHT erlaubt oder mit Fehler:", nrow(blocked_firms), "\n\n")
+
+if (nrow(blocked_firms) > 0) {
+  cat("--- Betroffene Firmen ---\n")
+  print(blocked_firms)
+} else {
+  cat("Alle Firmen-Hauptseiten dürfen laut robots.txt gecrawlt werden.\n")
+}
+
+# 6. Ergebnis speichern für Dokumentation in der Arbeit (z.B. Methodikkapitel)
+write_csv(robots_check_results, "robots_txt_check_results.csv")
+cat("\nErgebnis gespeichert in 'robots_txt_check_results.csv'\n")
