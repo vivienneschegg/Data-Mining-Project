@@ -4,6 +4,7 @@
 # ==============================================================================
 
 install.packages("chromote")
+install.packages("robotstxt")
 
 library(rvest)
 library(xml2)
@@ -12,6 +13,22 @@ library(dplyr)
 library(httr)
 library(stringr)
 library(chromote)
+library(robotstxt)
+
+# ------------------------------------------------------------------------------
+# Ethik-Layer (robots.txt-Check + identifizierender User-Agent)
+# ------------------------------------------------------------------------------
+academic_user_agent <- "VivienneSchegg-MasterThesis-UniLuzern/1.0 (+mailto:DEINE-UNI-MAIL@stud.unilu.ch; wissenschaftliche Datenerhebung fuer Masterseminararbeit, Uni Luzern)"
+
+is_scraping_allowed <- function(url) {
+    tryCatch({
+      isTRUE(paths_allowed(url, user_agent = academic_user_agent))
+     }, error = function(e) {
+        warning(paste("robots.txt konnte nicht geprüft werden für:", url, "-> übersprungen"))
+        return(FALSE)
+       })
+  }
+
 
 # 1. Daten direkt aus CSV laden
 if (file.exists("firms_data_starting.csv")) {
@@ -41,7 +58,7 @@ extract_relevant_links <- function(page, main_url, domain_name) {
   # - "a propos": Enerdrape (französischsprachig) nutzt "A propos"
   # - "story": Neology nutzt "Our Story" statt "About"
   # - "team": Neology nutzt zusätzlich "Our Team"
-  keywords <- "about|mission|sustainability|nachhaltigkeit|company|impact|uber-uns|über uns|values|werte|responsibility|verantwortung|esg|csr|a propos|story|team"
+  keywords <- "about|mission|sustainability|nachhaltigkeit|company|impact|uber-uns|über uns|values|werte|responsibility|verantwortung|esg|csr|a propos|story"
   
   relevant <- temp_links %>%
     filter(
@@ -68,10 +85,14 @@ extract_relevant_links <- function(page, main_url, domain_name) {
 # Variante 1: Schneller Crawl via httr (wie bisher)
 # ------------------------------------------------------------------------------
 find_company_subpages_httr <- function(main_url, domain_name) {
+  if (!is_scraping_allowed(main_url)) {
+    message(paste("  -> robots.txt verbietet Crawling für:", main_url))
+    return(NA)
+    }
   tryCatch({
     response <- GET(
       main_url, 
-      user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"),
+      user_agent(academic_user_agent),
       timeout(10)
     )
     if (status_code(response) >= 400) return(NA)
@@ -87,6 +108,10 @@ find_company_subpages_httr <- function(main_url, domain_name) {
 # Variante 2: Fallback mit JavaScript-Rendering via chromote
 # ------------------------------------------------------------------------------
 find_company_subpages_chromote <- function(main_url, domain_name, wait_seconds = 6) {
+  if (!is_scraping_allowed(main_url)) {
+    message(paste("  -> robots.txt verbietet Crawling (chromote) für:", main_url))
+    return(NA)
+     }
   tryCatch({
     session <- ChromoteSession$new()
     on.exit(session$close(), add = TRUE)
