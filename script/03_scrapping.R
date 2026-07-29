@@ -9,7 +9,22 @@ library(dplyr)
 library(tidytext)
 library(stopwords)
 library(jsonlite)
+library(robotstxt)
 
+
+# ------------------------------------------------------------------------------
+# Ethik-Layer (robots.txt-Check + identifizierender User-Agent)
+# ------------------------------------------------------------------------------
+academic_user_agent <- "VivienneSchegg-MasterThesis-UniLuzern/1.0 (+mailto:DEINE-UNI-MAIL@stud.unilu.ch; wissenschaftliche Datenerhebung fuer Masterseminararbeit, Uni Luzern)"
+
+is_scraping_allowed <- function(url) {
+  tryCatch({
+    isTRUE(paths_allowed(url, user_agent = academic_user_agent))
+  }, error = function(e) {
+    warning(paste("robots.txt konnte nicht geprüft werden für:", url, "-> übersprungen"))
+    return(FALSE)
+  })
+}
 
 # 1. Filter the Incumbent Firms
 incumbent_analysis <- firms_data3_final %>%
