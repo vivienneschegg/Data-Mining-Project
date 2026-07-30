@@ -70,20 +70,22 @@ head(firms_data)
 # ------------------------------------------------------------------------------
 firms2_data <- data.frame(
   name = c(
-    # Startups (30 Firmen)
+    # Startups (35 Firmen: ursprünglich 30 + 5 neue aus Top100 Swiss Startup Award 2025, Kategorie Cleantech)
     "DePoly", "Bloom Biorenewables", "Divea", "CellX", "Composite Recycling", 
     "Grensol", "Tethys Robotics", "Oxyle", "CompPair", "WattAnyWhere", 
     "Seprify", "Exnaton", "Enerdrape", "viboo", "Perovskia Solar", 
     "Planted Foods", "Corintis", "Voltiris", "MobyFly", "Climeworks", 
     "Verretex", "Neology", "HAYA Therapeutics", "Battrion", "Synhelion", 
     "ClearSpace", "Kyburz Switzerland", "Wingtra", "Yali Bio", "ANYbotics",
-    # Incumbents (15 Firmen)
+    "Emissium", "LIBREC", "Unbound Potential", "INERGIO Technologies", "CLIMADA Technologies",
+    # Incumbents (19 Firmen: ursprünglich 15 + 4 neue SMI-Titel)
     "Alpiq", "Novartis", "Axpo", "Nestle", "BKW", 
     "Romande Energie", "Holcim", "SBB", "UBS", "ZKB", 
-    "Migros", "Swisscom", "Swiss Prime Site", "Geberit", "ABB Schweiz"
+    "Migros", "Swisscom", "Swiss Prime Site", "Geberit", "ABB Schweiz",
+    "Roche", "Richemont", "Zurich Insurance", "Lonza"
   ),
   
-  type = c(rep("Startup", 30), rep("Incumbent", 15)),
+  type = c(rep("Startup", 35), rep("Incumbent", 19)),
   
   url = c(
     # Startups - Nur Hauptdomains 
@@ -101,23 +103,27 @@ firms2_data <- data.frame(
     "https://clearspace.today/", "https://kyburz-switzerland.ch/", "https://wingtra.com/", 
     "https://www.yali-bio.com/", 
     "https://www.anybotics.com/",
-    # Incumbents - Nur Hauptdomains 
+    # Neue Start-ups (verifizierte Hauptdomains, Top100 Swiss Startup Award 2025, Cleantech)
+    "https://www.emissium.io/", "https://librec.ch/", "https://www.unbound-potential.com/",
+    "https://inergio.ch/", "https://www.climada.tech/",
+    # Incumbents - Nur Hauptdomains, Romande Energie & Migros auf
+    # spezifische Unterseiten korrigiert (Hauptdomain lieferte Status 200,
+    # aber Crawler fand keine passende Unterseite über die Keyword-Liste)
     "https://www.alpiq.com/", "https://www.novartis.com/", 
     "https://www.axpo.com/", "https://www.nestle.com/", "https://www.bkw.ch/", 
-    "https://www.romande-energie.ch/", "https://www.holcim.ch/", "https://www.sbb.ch/", "https://www.ubs.com/", "https://www.zkb.ch/", 
-    "https://www.migros.ch/", "https://www.swisscom.ch/", "https://www.sps.swiss/", "https://www.geberit.com/", "https://new.abb.com/ch"
+    "https://www.romande-energie.ch/groupe/engagements", "https://www.holcim.ch/", "https://www.sbb.ch/", "https://www.ubs.com/", "https://www.zkb.ch/", 
+    "https://report.migros.ch/de/nachhaltigkeit/", "https://www.swisscom.ch/", "https://www.sps.swiss/", "https://www.geberit.com/", "https://new.abb.com/ch",
+    # Neue SMI-Incumbents (verifizierte Hauptdomains)
+    "https://www.roche.com/", "https://www.richemont.com/", "https://www.zurich.com/", "https://www.lonza.com/"
   ),
   
   stringsAsFactors = FALSE
 )
-
 print("--- KORRIGIERTER ANSATZ (NUR HAUPTDOMAINS, URLS VERIFIZIERT) ---")
 print(firms2_data)
-
 # Verteilung überprüfen zur Kontrolle
 print("Verteilung der Firmen-Typen:")
 table(firms2_data$type)
-
 # ------------------------------------------------------------------------------
 # 3. Export in die CSV-Datei für die Pipeline
 # ------------------------------------------------------------------------------
