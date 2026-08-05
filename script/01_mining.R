@@ -128,4 +128,4 @@ table(firms2_data$type)
 # 3. Export in die CSV-Datei für die Pipeline
 # ------------------------------------------------------------------------------
 write_csv(firms2_data, "firms_data_starting.csv")
-print("Datei 'firms_data_starting.csv' erfolgreich mit 45 Firmen exportiert!")
+print("Datei 'firms_data_starting.csv' erfolgreich mit 54 Firmen exportiert!")

@@ -89,4 +89,4 @@ write_csv(isomorphism_index, "isomorphism_index_results.csv")
 
 print("Analysedaten erfolgreich exportiert! Bereit für die Skripte 05 (Dictionary) und 06 (Plots).")
 
-print(isomorphism_index, n = 30)
+print(isomorphism_index, n = 35)
