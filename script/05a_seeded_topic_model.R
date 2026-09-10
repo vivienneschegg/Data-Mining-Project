@@ -1,7 +1,7 @@
 # ==============================================================================
 # PROJEKT: Masterseminararbeit - Institutioneller Isomorphismus
-# ERGÄNZUNG ZU SKRIPT 05: Seeded Topic Model (keyATM) als Robustheitscheck
-# zum bestehenden 41-Begriffe-Wörterbuch
+# SKRIPT 05a: Seeded Topic Model (keyATM) als Robustheitscheck
+# zum bestehenden 41-Begriffe-Wörterbuch (Skript 05)
 # ==============================================================================
 
 install.packages("keyATM")
@@ -149,3 +149,94 @@ saveRDS(
 )
 
 cat("\n-> Robustheitscheck abgeschlossen. Ergebnisse in 'robustness_check_results.rds' gesichert.\n")
+
+# ==============================================================================
+# ANHANG: Determinismus-Check 
+# ==============================================================================
+
+# Dokumentreihenfolge protokollieren, BEVOR Fit B läuft
+cat("--- Dokumentreihenfolge vor Fit B (erste 10) ---\n")
+print(head(dfm_obj@docvars$docname_, 10))
+cat("Anzahl Dokumente in dfm_obj:", ndoc(dfm_obj), "\n")
+cat("Anzahl Dokumente in firm_corpus_df:", nrow(firm_corpus_df), "\n\n")
+
+set.seed(123)
+fit_B <- keyATM(
+  docs = keyATM_docs,
+  no_keyword_topics = 2,
+  keywords = keywords,
+  model = "base",
+  options = list(seed = 123, iterations = 3000)
+)
+
+theta_B <- as.data.frame(fit_B$theta)
+theta_B$name <- firm_corpus_df$name
+theta_B$type <- firm_corpus_df$type
+substance_col_B <- grep("substance", colnames(theta_B), value = TRUE)
+
+ttest_B <- t.test(theta_B[[substance_col_B]] ~ theta_B$type)
+
+cat("--- VERGLEICH: Fit A (oben, 'theta') vs. Fit B (hier, 'theta_B') ---\n")
+cat("Fit A: t =", round(as.numeric(ttest_keyatm$statistic), 4),
+    " p =", format.pval(ttest_keyatm$p.value, digits = 4), "\n")
+cat("Fit B: t =", round(as.numeric(ttest_B$statistic), 4),
+    " p =", format.pval(ttest_B$p.value, digits = 4), "\n")
+
+cat("\nSind die theta-Werte für die Substance-Spalte identisch?",
+    isTRUE(all.equal(theta[[substance_col]], theta_B[[substance_col_B]])), "\n")
+cat("Maximale absolute Differenz:",
+    max(abs(theta[[substance_col]] - theta_B[[substance_col_B]])), "\n")
+
+# ==============================================================================
+# Seed-Stabilitätscheck mit 40 Seeds (Andreas Vorgabe: 30-50)
+# ==============================================================================
+
+library(keyATM)
+library(dplyr)
+library(readr)
+
+set.seed(1)  # nur für die Seed-Ziehung selbst, nicht für keyATM
+seeds_to_test <- sample(1:100000, 40)
+
+seed_stability_results_40 <- data.frame()
+
+for (s in seeds_to_test) {
+  set.seed(s)
+  fit_seed <- keyATM(
+    docs = keyATM_docs,
+    no_keyword_topics = 2,
+    keywords = keywords,
+    model = "base",
+    options = list(seed = s, iterations = 3000, verbose = FALSE)
+  )
+  
+  theta_seed <- as.data.frame(fit_seed$theta)
+  theta_seed$name <- firm_corpus_df$name
+  theta_seed$type <- firm_corpus_df$type
+  substance_col_seed <- grep("substance", colnames(theta_seed), value = TRUE)
+  
+  ttest_seed <- t.test(theta_seed[[substance_col_seed]] ~ theta_seed$type)
+  
+  seed_stability_results_40 <- bind_rows(seed_stability_results_40, data.frame(
+    seed = s,
+    t_value = round(as.numeric(ttest_seed$statistic), 4),
+    p_value = ttest_seed$p.value,
+    mean_incumbent = round(as.numeric(ttest_seed$estimate[1]), 4),
+    mean_startup = round(as.numeric(ttest_seed$estimate[2]), 4)
+  ))
+  
+  cat("Seed", s, "-> t =", round(as.numeric(ttest_seed$statistic), 3),
+      " p =", format.pval(ttest_seed$p.value, digits = 3), "\n")
+}
+
+n_sig <- sum(seed_stability_results_40$p_value < 0.05)
+n_right_dir <- sum(seed_stability_results_40$mean_startup > seed_stability_results_40$mean_incumbent)
+
+cat("\n--- ZUSAMMENFASSUNG ---\n")
+cat("Signifikant in", n_sig, "von", nrow(seed_stability_results_40), "Seeds\n")
+cat("Richtig gerichtet in", n_right_dir, "von", nrow(seed_stability_results_40), "Seeds\n")
+cat("t-Wert Spanne:", round(min(seed_stability_results_40$t_value), 3), "bis",
+    round(max(seed_stability_results_40$t_value), 3), "\n")
+cat("Median t:", round(median(seed_stability_results_40$t_value), 3), "\n")
+
+write_csv(seed_stability_results_40, "keyatm_seed_stability_40seeds.csv")
