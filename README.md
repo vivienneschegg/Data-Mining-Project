@@ -27,7 +27,7 @@ The goal of this project is to analyze whether Swiss green-tech start-ups adopt 
 - Function find_company_subpages(): keyword matching (about, mission, sustainability, nachhaltigkeit, impact, esg, csr, etc.) across all links on a homepage
 - Domain validation prevents following external links (e.g. LinkedIn/Instagram); user-agent simulation and timeout handling
 - Exports firms_subpages_crawled.csv
-- 
+  
 03_scrapping: Text Extraction
 - Scrapes the identified subpages via httr/rvest, targeting semantic tags (p, h1, h2, h3)
 - Cleans text and saves the unified dataset as full_research_data.json
