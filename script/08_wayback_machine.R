@@ -2,7 +2,8 @@
 # DIAGNOSESKRIPT: Wayback-Machine-Abdeckungstest FÜR ALLE START-UPS
 # Prüft pro Start-up, wie viele Jahres-Snapshots relevanter, echter Textseiten
 # (About/Mission/Team etc., ohne Bild-/PDF-/Video-Assets) im Internet Archive
-# verfügbar sind, als Grundlage für die Entscheidung Panel-Design ja/nein
+#verfügbar sind, als Grundlage für die Entscheidung Panel-Design ja/nein
+# Wird nicht verwendet, zum Test
 # ==============================================================================
 
 library(httr)
