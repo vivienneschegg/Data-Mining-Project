@@ -1,6 +1,6 @@
 # ==============================================================================
 # PROJEKT: Masterseminararbeit - Institutioneller Isomorphismus
-# SKRIPT 04b: Dokumentlänge als Kontrollvariable & Permutationsbaseline
+# SKRIPT 04a: Dokumentlänge als Kontrollvariable & Permutationsbaseline
 #             für den Isomorphie-Index (roh UND TF-IDF-gewichtet)
 # Voraussetzung: tidy_corpus, isomorphism_index und research_data
 # (aus Skript 04) müssen im Workspace vorhanden sein.
@@ -190,7 +190,3 @@ saveRDS(
   ),
   "permutation_baseline_results.rds"
 )
-
-cat("\n-> Permutationsbaseline (roh + TF-IDF) abgeschlossen. Ergebnisse in\n")
-cat("   'permutation_baseline_results.rds' gesichert, Plots in\n")
-cat("   'permutation_baseline_raw.png' und 'permutation_baseline_tfidf.png'.\n")
